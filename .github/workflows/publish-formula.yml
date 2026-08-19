@@ -1,0 +1,176 @@
+name: Publish Homebrew formula
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "LocalCloud CLI version to publish, e.g. 0.1.0"
+        required: true
+
+concurrency:
+  group: homebrew-publish-${{ inputs.version }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_REPO: LocalGCloud/localcloud-cli
+
+permissions:
+  contents: read
+
+jobs:
+  fetch-and-verify:
+    name: Fetch and verify formula
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      - name: Validate version format
+        id: validate
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' || {
+            echo "version must have the form X.Y.Z, got '$VERSION'" >&2
+            exit 1
+          }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          mkdir -p release-assets
+          gh release download "v${VERSION}" \
+            --repo "$SOURCE_REPO" \
+            --dir release-assets \
+            --pattern "localcloud.rb" \
+            --pattern "SHA256SUMS" \
+            --pattern "SHA256SUMS.sigstore.json"
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Verify SHA256SUMS signature
+        working-directory: release-assets
+        env:
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          cosign verify-blob \
+            --bundle SHA256SUMS.sigstore.json \
+            --certificate-identity-regexp "^https://github\.com/${SOURCE_REPO}/\.github/workflows/cli-release\.yml@refs/tags/v${VERSION}$" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            SHA256SUMS
+
+      - name: Cross-check formula checksums against signed SHA256SUMS
+        working-directory: release-assets
+        env:
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import sys
+
+          version = os.environ["VERSION"]
+          formula = open("localcloud.rb", encoding="utf-8").read()
+          if f'version "{version}"' not in formula:
+              sys.exit(f"formula version mismatch: expected {version}")
+
+          checksums = {}
+          for line in open("SHA256SUMS", encoding="utf-8"):
+              line = line.strip()
+              if not line:
+                  continue
+              digest, name = line.split(None, 1)
+              checksums[name.lstrip("*")] = digest
+
+          pairs = re.findall(
+              r'url "[^"]*/(localcloud-[a-z0-9_.-]+\.tar\.gz)"\s*\n\s*sha256 "([0-9a-f]{64})"',
+              formula,
+          )
+          if len(pairs) != 4:
+              sys.exit(f"expected 4 asset/checksum pairs in formula, found {len(pairs)}")
+
+          for asset, sha in pairs:
+              if checksums.get(asset) != sha:
+                  sys.exit(
+                      f"checksum mismatch for {asset}: "
+                      f"formula={sha} SHA256SUMS={checksums.get(asset)}"
+                  )
+
+          print("formula checksums verified against signed SHA256SUMS")
+          PY
+
+      - name: Validate formula syntax
+        working-directory: release-assets
+        run: ruby -c localcloud.rb
+
+      - name: Upload verified formula
+        uses: actions/upload-artifact@v4
+        with:
+          name: localcloud-formula
+          path: release-assets/localcloud.rb
+          retention-days: 1
+
+  verify-install:
+    name: brew install on ${{ matrix.runner }}
+    needs: fetch-and-verify
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - macos-15
+          - macos-15-intel
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Download verified formula
+        uses: actions/download-artifact@v4
+        with:
+          name: localcloud-formula
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: brew install from local formula
+        run: brew install ./localcloud.rb
+
+      - name: brew test
+        run: brew test localcloud
+
+      - name: brew uninstall
+        if: always()
+        run: brew uninstall localcloud
+
+  publish:
+    name: Publish formula to tap
+    needs: [fetch-and-verify, verify-install]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified formula
+        uses: actions/download-artifact@v4
+        with:
+          name: localcloud-formula
+          path: incoming
+
+      - name: Publish formula
+        env:
+          VERSION: ${{ needs.fetch-and-verify.outputs.version }}
+        run: |
+          mkdir -p Formula
+          if [ -f Formula/localcloud.rb ] && diff -q incoming/localcloud.rb Formula/localcloud.rb >/dev/null 2>&1; then
+            echo "Formula already up to date for ${VERSION}; nothing to publish."
+            exit 0
+          fi
+          cp incoming/localcloud.rb Formula/localcloud.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/localcloud.rb
+          git commit -m "localcloud ${VERSION}"
+          git push origin HEAD:main
