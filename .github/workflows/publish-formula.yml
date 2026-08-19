@@ -126,16 +126,17 @@ jobs:
           - ubuntu-22.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
       - name: Download verified formula
         uses: actions/download-artifact@v4
         with:
           name: localcloud-formula
-
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+          path: ${{ runner.temp }}/formula
 
       - name: brew install from local formula
-        run: brew install ./localcloud.rb
+        run: brew install "${{ runner.temp }}/formula/localcloud.rb"
 
       - name: brew test
         run: brew test localcloud
