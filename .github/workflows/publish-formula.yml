@@ -127,6 +127,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Set up Homebrew
+        id: brew
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Download verified formula
@@ -135,8 +136,13 @@ jobs:
           name: localcloud-formula
           path: ${{ runner.temp }}/formula
 
-      - name: brew install from local formula
-        run: brew install "${{ runner.temp }}/formula/localcloud.rb"
+      - name: Stage formula in the auto-tapped checkout
+        run: |
+          mkdir -p "${{ steps.brew.outputs.repository-path }}/Formula"
+          cp "${{ runner.temp }}/formula/localcloud.rb" "${{ steps.brew.outputs.repository-path }}/Formula/localcloud.rb"
+
+      - name: brew install from tap
+        run: brew install "${{ steps.brew.outputs.tap-name }}/localcloud"
 
       - name: brew test
         run: brew test localcloud
