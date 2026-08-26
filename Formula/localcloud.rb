@@ -1,33 +1,34 @@
 class Localcloud < Formula
   desc "Host CLI for the LocalCloud Google Cloud emulator"
   homepage "https://local.cloud"
-  version "0.1.1"
+  version "0.1.2"
   license :cannot_represent
 
   on_macos do
     depends_on macos: :ventura
 
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.1/localcloud-darwin-arm64.tar.gz"
-      sha256 "b9b33cafdc40890cdf87dfe07289010f5fe1a68430faab3b758c76d736640b6f"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-darwin-arm64.tar.gz"
+      sha256 "793ac718d03c21e8b92fe60fa80f8ffad7dd22697644d54a607def3ab8b47dd8"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.1/localcloud-darwin-amd64.tar.gz"
-      sha256 "56bae15cd07465f7b060388263502359d42b0fe5c5290189267bcffac5017f04"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-darwin-amd64.tar.gz"
+      sha256 "ff26e51de98f38bb7b7f38989b11712c83c2b896b17f4d84b67e34a91faf73ce"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.1/localcloud-linux-arm64.tar.gz"
-      sha256 "3a21fc8d46c69c4b8484460ef8ffeca3a05b9afbfb7909aec4e193f03f2119de"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-linux-arm64.tar.gz"
+      sha256 "d90d3bc5cb1d66fe7823fc1711ba417c7524b1d71847a07e0e6c4f3a0351d3b0"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.1/localcloud-linux-amd64.tar.gz"
-      sha256 "4ab5c5271c25852d91bc8c1b4299a554a16316b354967e54a6ddac71b385ae8f"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-linux-amd64.tar.gz"
+      sha256 "7a8169bb9448e6a33435445e6b894b4c03588984571b18e28cbbbeda830c04f9"
     end
   end
 
   def install
-    bin.install "localcloud"
+    libexec.install "localcloud", "localcloud-runtime"
+    bin.write_exec_script libexec/"localcloud"
     bin.install_symlink bin/"localcloud" => "lc"
   end
 
