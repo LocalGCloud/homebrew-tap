@@ -9,20 +9,20 @@ class Localcloud < Formula
 
     if Hardware::CPU.arm?
       url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-darwin-arm64.tar.gz"
-      sha256 "793ac718d03c21e8b92fe60fa80f8ffad7dd22697644d54a607def3ab8b47dd8"
+      sha256 "263ebba7ae8262de7f368b99db4ce24d579cca6b40d102ba5cf3b9c04151ad23"
     else
       url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-darwin-amd64.tar.gz"
-      sha256 "ff26e51de98f38bb7b7f38989b11712c83c2b896b17f4d84b67e34a91faf73ce"
+      sha256 "de8631bb9d5afaf5656d4e9034ae50955894bc589cb3a707373ab10e940d7694"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
       url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-linux-arm64.tar.gz"
-      sha256 "d90d3bc5cb1d66fe7823fc1711ba417c7524b1d71847a07e0e6c4f3a0351d3b0"
+      sha256 "37bb1a02f7a2a9c3096aea9b4377943e2650fdb78f0a8aac9344d07eb61340b3"
     else
       url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.2/localcloud-linux-amd64.tar.gz"
-      sha256 "7a8169bb9448e6a33435445e6b894b4c03588984571b18e28cbbbeda830c04f9"
+      sha256 "e1e8d76b8ed2cc3d90089f90b87d7836dfae5b67ed1fecb8d11be4433428b1bb"
     end
   end
 
