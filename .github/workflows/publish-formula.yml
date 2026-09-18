@@ -128,7 +128,7 @@ jobs:
     steps:
       - name: Set up Homebrew
         id: brew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Download verified formula
         uses: actions/download-artifact@v4
