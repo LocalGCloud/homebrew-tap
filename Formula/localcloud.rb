@@ -1,28 +1,28 @@
 class Localcloud < Formula
   desc "Host CLI for the LocalCloud Google Cloud emulator"
   homepage "https://local.cloud"
-  version "0.1.5"
+  version "0.1.6"
   license :cannot_represent
 
   on_macos do
     depends_on macos: :ventura
 
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.5/localcloud-darwin-arm64.tar.gz"
-      sha256 "07ea54f96fb1e0422c9c24abd5316155da3da3d6eebddd6e311ebd2b8802aa85"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.6/localcloud-darwin-arm64.tar.gz"
+      sha256 "2b9c6514767a21c36226d16e13ba8c651e9723aef49a7cf4c7ff65fb6376ab3a"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.5/localcloud-darwin-amd64.tar.gz"
-      sha256 "e72da9638b93eb9ab5daaa0b7f25d8c0d5d119f270cfd00b31a0e874130a9adb"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.6/localcloud-darwin-amd64.tar.gz"
+      sha256 "2ca42d3f38b6c283ea088db1fc4e67afec28ee8066f631aa34f83dc41d9485eb"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.5/localcloud-linux-arm64.tar.gz"
-      sha256 "3c26f2259e1a8a52e21cc666af8f112c252377b55c7d403855e9d34fcb5142ad"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.6/localcloud-linux-arm64.tar.gz"
+      sha256 "5c5890417e8afd864456542ed206dca63dcf6b96cd420001b2865a4c06102491"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.5/localcloud-linux-amd64.tar.gz"
-      sha256 "21250bc26b43a07001f44aaf119d73953fc3f825964d493badbe080fa16c65e3"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.6/localcloud-linux-amd64.tar.gz"
+      sha256 "ff3908c6cc2c00c356df4dd87533c930dfc5d385e923cc805b4cad4e4f9e85b3"
     end
   end
 
@@ -43,7 +43,7 @@ class Localcloud < Formula
         lc doctor
         lc start
 
-      Then open http://localhost:5365.
+      Then open http://localhost:5380.
     EOS
   end
 
