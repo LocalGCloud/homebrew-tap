@@ -1,28 +1,28 @@
 class Localcloud < Formula
   desc "Host CLI for the LocalCloud Google Cloud emulator"
   homepage "https://local.cloud"
-  version "0.1.8"
+  version "0.1.9"
   license :cannot_represent
 
   on_macos do
     depends_on macos: :ventura
 
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.8/localcloud-darwin-arm64.tar.gz"
-      sha256 "9e9bfb77ff7c17605f7d62768d7acdfb368a028806dbfea9444c9f4ae07ba8bd"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.9/localcloud-darwin-arm64.tar.gz"
+      sha256 "bc15e741c178cb70599a9af367d5f9ad3ffb8889f4dba6fec0f915b746a8f32f"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.8/localcloud-darwin-amd64.tar.gz"
-      sha256 "5401b1fe00bf3218ad749a47e58b8414134f9ef281954d370f22d7ceabea7aab"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.9/localcloud-darwin-amd64.tar.gz"
+      sha256 "59c7b7e6a68d295df4d02b1eb3c2f42747f48c470e056b4e6347ba37bb5816ce"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.8/localcloud-linux-arm64.tar.gz"
-      sha256 "b93024c61ec35cd8f5376b1034af05d176bb1b7451c22077b8c3740cc18263e2"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.9/localcloud-linux-arm64.tar.gz"
+      sha256 "62d497e2f835f3d20152a195a30c8633570bf35cc3c1b3aca355028737f5ba30"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.8/localcloud-linux-amd64.tar.gz"
-      sha256 "4ce2e0db82551191e7180b0f39375379768a57ba4f9b861046ada6f64e1097a3"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.9/localcloud-linux-amd64.tar.gz"
+      sha256 "92132008a231c64b507544aa095d4e3c2b402177ae87c99a0b530569f9f84219"
     end
   end
 
