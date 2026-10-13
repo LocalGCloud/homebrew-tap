@@ -1,28 +1,24 @@
 class Localcloud < Formula
   desc "Host CLI for the LocalCloud Google Cloud emulator"
   homepage "https://local.cloud"
-  version "0.1.11"
+  version "0.1.12"
   license :cannot_represent
 
   on_macos do
+    depends_on arch: :arm64
     depends_on macos: :ventura
 
-    if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.11/localcloud-darwin-arm64.tar.gz"
-      sha256 "8d7fd55b620f2d699985bdf5f529f27ca9d21a1f233990ad012ba9ebf4d85756"
-    else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.11/localcloud-darwin-amd64.tar.gz"
-      sha256 "6c7d57c9dba11bd187f7fcc25db9dd2b304efcd250289bad216fd517d7be911a"
-    end
+    url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.12/localcloud-darwin-arm64.tar.gz"
+    sha256 "ba1fb45558dfedfe5ce41b7217b17658ffe80edc53b1ad8269effadf5193cb11"
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.11/localcloud-linux-arm64.tar.gz"
-      sha256 "fafbb7f4b47e618119623bc49bfa547a38d3aece19a13816caa1f8c0ed10e684"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.12/localcloud-linux-arm64.tar.gz"
+      sha256 "60bd1a34f19c1ed3ca691e793c2444e05539df481aec0f91eaf2625ee2233061"
     else
-      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.11/localcloud-linux-amd64.tar.gz"
-      sha256 "59fe59aee7e8cc97767a1b4520ceb0386b449cf4eb36bb76ba56a2bae9c373b5"
+      url "https://github.com/LocalGCloud/localcloud-cli/releases/download/v0.1.12/localcloud-linux-amd64.tar.gz"
+      sha256 "e7d35ee66d472f33fe959203316f27850a8c57177dd9bf20af63efbc90fa59ff"
     end
   end
 
@@ -39,11 +35,15 @@ class Localcloud < Formula
 
       lc is an alias for localcloud; both commands behave identically.
 
-      Diagnose Docker and start LocalCloud:
-        lc doctor
-        lc start
+      Quick start:
+        lc doctor                 # check Docker setup
+        lc start                  # start the LocalCloud runtime
+        eval "$(lc env)"          # export Google Cloud SDK environment
+        lc console                # open web console (http://localhost:5380)
 
-      Then open http://localhost:5380.
+      AI coding agents:
+        lc mcp                    # stdio MCP bridge for Claude, Cursor, Codex
+        lc guide                  # coding-agent prompt and usage guide
     EOS
   end
 
